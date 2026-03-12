@@ -15,6 +15,7 @@ static const long Cryptography_HAS_TLS_ST;
 static const long Cryptography_HAS_SSL3_METHOD;
 static const long Cryptography_HAS_TLSv1_1;
 static const long Cryptography_HAS_TLSv1_2;
+static const long Cryptography_HAS_NTLS;
 static const long Cryptography_HAS_TLSv1_3_FUNCTIONS;
 static const long Cryptography_HAS_SECURE_RENEGOTIATION;
 static const long Cryptography_HAS_SSL_CTX_CLEAR_OPTIONS;
@@ -143,6 +144,7 @@ static const long TLS1_VERSION;
 static const long TLS1_1_VERSION;
 static const long TLS1_2_VERSION;
 static const long TLS1_3_VERSION;
+static const long Cryptography_NTLS1_1_VERSION;
 
 typedef ... SSL_METHOD;
 typedef ... SSL_CTX;
@@ -380,6 +382,33 @@ const SSL_METHOD *SSLv23_client_method(void);
 const SSL_METHOD *TLS_method(void);
 const SSL_METHOD *TLS_server_method(void);
 const SSL_METHOD *TLS_client_method(void);
+
+/* NTLS methods */
+const SSL_METHOD *NTLS_method(void);
+const SSL_METHOD *NTLS_server_method(void);
+const SSL_METHOD *NTLS_client_method(void);
+
+/* NTLS certificate and key functions */
+void SSL_CTX_enable_ntls(SSL_CTX *);
+void SSL_CTX_disable_ntls(SSL_CTX *);
+void SSL_enable_ntls(SSL *);
+void SSL_disable_ntls(SSL *);
+int SSL_CTX_use_sign_certificate(SSL_CTX *, X509 *);
+int SSL_CTX_use_sign_certificate_file(SSL_CTX *, const char *, int);
+int SSL_CTX_use_enc_certificate(SSL_CTX *, X509 *);
+int SSL_CTX_use_enc_certificate_file(SSL_CTX *, const char *, int);
+int SSL_CTX_use_sign_PrivateKey(SSL_CTX *, EVP_PKEY *);
+int SSL_CTX_use_sign_PrivateKey_file(SSL_CTX *, const char *, int);
+int SSL_CTX_use_enc_PrivateKey(SSL_CTX *, EVP_PKEY *);
+int SSL_CTX_use_enc_PrivateKey_file(SSL_CTX *, const char *, int);
+int SSL_use_sign_certificate(SSL *, X509 *);
+int SSL_use_sign_certificate_file(SSL *, const char *, int);
+int SSL_use_enc_certificate(SSL *, X509 *);
+int SSL_use_enc_certificate_file(SSL *, const char *, int);
+int SSL_use_sign_PrivateKey(SSL *, EVP_PKEY *);
+int SSL_use_sign_PrivateKey_file(SSL *, const char *, int);
+int SSL_use_enc_PrivateKey(SSL *, EVP_PKEY *);
+int SSL_use_enc_PrivateKey_file(SSL *, const char *, int);
 
 /*- These aren't macros these arguments are all const X on openssl > 1.0.x -*/
 SSL_CTX *SSL_CTX_new(SSL_METHOD *);
@@ -638,4 +667,35 @@ static const long Cryptography_HAS_PSK_TLSv1_3 = 1;
 SSL_SESSION *Cryptography_SSL_SESSION_new(void) {
     return SSL_SESSION_new();
 }
+
+#ifndef OPENSSL_NO_NTLS
+static const long Cryptography_HAS_NTLS = 1;
+static const long Cryptography_NTLS1_1_VERSION = NTLS1_1_VERSION;
+#else
+static const long Cryptography_HAS_NTLS = 0;
+static const long Cryptography_NTLS1_1_VERSION = 0;
+const SSL_METHOD *(*NTLS_method)(void) = NULL;
+const SSL_METHOD *(*NTLS_server_method)(void) = NULL;
+const SSL_METHOD *(*NTLS_client_method)(void) = NULL;
+void (*SSL_CTX_enable_ntls)(SSL_CTX *) = NULL;
+void (*SSL_CTX_disable_ntls)(SSL_CTX *) = NULL;
+void (*SSL_enable_ntls)(SSL *) = NULL;
+void (*SSL_disable_ntls)(SSL *) = NULL;
+int (*SSL_CTX_use_sign_certificate)(SSL_CTX *, X509 *) = NULL;
+int (*SSL_CTX_use_sign_certificate_file)(SSL_CTX *, const char *, int) = NULL;
+int (*SSL_CTX_use_enc_certificate)(SSL_CTX *, X509 *) = NULL;
+int (*SSL_CTX_use_enc_certificate_file)(SSL_CTX *, const char *, int) = NULL;
+int (*SSL_CTX_use_sign_PrivateKey)(SSL_CTX *, EVP_PKEY *) = NULL;
+int (*SSL_CTX_use_sign_PrivateKey_file)(SSL_CTX *, const char *, int) = NULL;
+int (*SSL_CTX_use_enc_PrivateKey)(SSL_CTX *, EVP_PKEY *) = NULL;
+int (*SSL_CTX_use_enc_PrivateKey_file)(SSL_CTX *, const char *, int) = NULL;
+int (*SSL_use_sign_certificate)(SSL *, X509 *) = NULL;
+int (*SSL_use_sign_certificate_file)(SSL *, const char *, int) = NULL;
+int (*SSL_use_enc_certificate)(SSL *, X509 *) = NULL;
+int (*SSL_use_enc_certificate_file)(SSL *, const char *, int) = NULL;
+int (*SSL_use_sign_PrivateKey)(SSL *, EVP_PKEY *) = NULL;
+int (*SSL_use_sign_PrivateKey_file)(SSL *, const char *, int) = NULL;
+int (*SSL_use_enc_PrivateKey)(SSL *, EVP_PKEY *) = NULL;
+int (*SSL_use_enc_PrivateKey_file)(SSL *, const char *, int) = NULL;
+#endif
 """
