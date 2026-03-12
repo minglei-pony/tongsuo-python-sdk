@@ -45,6 +45,35 @@ def cryptography_has_ssl_op_ignore_unexpected_eof() -> typing.List[str]:
     ]
 
 
+def cryptography_has_ntls() -> typing.List[str]:
+    return [
+        "NTLS_method",
+        "NTLS_server_method",
+        "NTLS_client_method",
+        "SSL_CTX_enable_ntls",
+        "SSL_CTX_disable_ntls",
+        "SSL_enable_ntls",
+        "SSL_disable_ntls",
+        "SSL_CTX_use_sign_certificate",
+        "SSL_CTX_use_sign_certificate_file",
+        "SSL_CTX_use_enc_certificate",
+        "SSL_CTX_use_enc_certificate_file",
+        "SSL_CTX_use_sign_PrivateKey",
+        "SSL_CTX_use_sign_PrivateKey_file",
+        "SSL_CTX_use_enc_PrivateKey",
+        "SSL_CTX_use_enc_PrivateKey_file",
+        "SSL_use_sign_certificate",
+        "SSL_use_sign_certificate_file",
+        "SSL_use_enc_certificate",
+        "SSL_use_enc_certificate_file",
+        "SSL_use_sign_PrivateKey",
+        "SSL_use_sign_PrivateKey_file",
+        "SSL_use_enc_PrivateKey",
+        "SSL_use_enc_PrivateKey_file",
+        "Cryptography_NTLS1_1_VERSION",
+    ]
+
+
 # This is a mapping of
 # {condition: function-returning-names-dependent-on-that-condition} so we can
 # loop over them and delete unsupported names at runtime. It will be removed
@@ -61,4 +90,5 @@ CONDITIONAL_NAMES = {
     "Cryptography_HAS_SSL_OP_IGNORE_UNEXPECTED_EOF": (
         cryptography_has_ssl_op_ignore_unexpected_eof
     ),
+    "Cryptography_HAS_NTLS": cryptography_has_ntls,
 }
