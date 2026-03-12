@@ -74,11 +74,17 @@ def build_ffi(
     )
     ffi.cdef(cdef_source)
 
+    # When TONGSUOPY_LIMITED_API is set (e.g. "cp37"), build the C extension
+    # with Py_LIMITED_API so the resulting .so is compatible across CPython
+    # versions (abi3 wheel).
+    limited_api = os.environ.get("TONGSUOPY_LIMITED_API")
+
     ffi.set_source(
         module_name,
         verify_source,
         libraries=libraries,
         extra_compile_args=extra_compile_args,
+        py_limited_api=bool(limited_api),
         **kwargs,
     )
     return ffi

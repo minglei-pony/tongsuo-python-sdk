@@ -94,10 +94,14 @@ jobs:
       - run: mkdir tmpwheelhouse
       - name: Build the wheel
         run: |
+          tar xf tongsuopy*.tar.gz
+          SDIST_DIR=$(ls -d tongsuopy-*/)
           if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
-              PY_LIMITED_API="--config-settings=build-args=--features=pyo3/abi3-${{ matrix.PYTHON.ABI_VERSION }} --no-build-isolation"
+              CP_VERSION="$(echo '${{ matrix.PYTHON.ABI_VERSION }}' | sed 's/py/cp/')"
+              export TONGSUOPY_LIMITED_API="$CP_VERSION"
+              printf '[bdist_wheel]\npy_limited_api = %s\n' "$CP_VERSION" > "${SDIST_DIR}/setup.cfg"
           fi
-          .venv/bin/python -m pip wheel -v --no-deps $PY_LIMITED_API tongsuopy*.tar.gz -w dist/ && mv dist/tongsuopy*.whl tmpwheelhouse
+          .venv/bin/python -m pip wheel -v --no-deps --no-build-isolation "${SDIST_DIR}" -w dist/ && mv dist/tongsuopy*.whl tmpwheelhouse
       - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/tongsuopy*.whl -w wheelhouse/
       - run: unzip wheelhouse/*.whl -d execstack.check
       - run: |
@@ -193,11 +197,14 @@ jobs:
             
             cd ${INNER_WORKSPACE}
             mkdir tmpwheelhouse
-            PY_LIMITED_API=""
+            tar xf tongsuopy*.tar.gz
+            SDIST_DIR=$(ls -d tongsuopy-*/)
             if [ -n "${PYTHON_ABI_VERSION}" ]; then
-              PY_LIMITED_API="--config-settings=build-args=--features=pyo3/abi3-${PYTHON_ABI_VERSION} --no-build-isolation"
+              CP_VERSION="$(echo "${PYTHON_ABI_VERSION}" | sed 's/py/cp/')"
+              export TONGSUOPY_LIMITED_API="$CP_VERSION"
+              printf '[bdist_wheel]\npy_limited_api = %s\n' "$CP_VERSION" > "${SDIST_DIR}/setup.cfg"
             fi
-            ${INNER_BUILD_DIR}/.venv/bin/python -m pip wheel -v --no-deps ${PY_LIMITED_API} tongsuopy*.tar.gz -w dist/ && mv dist/tongsuopy*.whl tmpwheelhouse
+            ${INNER_BUILD_DIR}/.venv/bin/python -m pip wheel -v --no-deps --no-build-isolation "${SDIST_DIR}" -w dist/ && mv dist/tongsuopy*.whl tmpwheelhouse
             
             cd ${INNER_WORKSPACE}
             auditwheel repair --plat ${MANYLINUX_NAME} tmpwheelhouse/tongsuopy*.whl -w wheelhouse/
@@ -303,10 +310,14 @@ jobs:
       - run: mkdir wheelhouse
       - name: Build the wheel
         run: |
+          tar xf tongsuopy*.tar.gz
+          SDIST_DIR=$(ls -d tongsuopy-*/)
           if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
-              PY_LIMITED_API="--config-settings=build-args=--features=pyo3/abi3-${{ matrix.PYTHON.ABI_VERSION }} --no-build-isolation"
+              CP_VERSION="$(echo '${{ matrix.PYTHON.ABI_VERSION }}' | sed 's/py/cp/')"
+              export TONGSUOPY_LIMITED_API="$CP_VERSION"
+              printf '[bdist_wheel]\npy_limited_api = %s\n' "$CP_VERSION" > "${SDIST_DIR}/setup.cfg"
           fi
-          venv/bin/python -m pip wheel -v --no-deps $PY_LIMITED_API tongsuopy*.tar.gz -w dist/ && mv dist/tongsuopy*.whl wheelhouse
+          venv/bin/python -m pip wheel -v --no-deps --no-build-isolation "${SDIST_DIR}" -w dist/ && mv dist/tongsuopy*.whl wheelhouse
         env:
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.PYTHON.DEPLOYMENT_TARGET }}
           ARCHFLAGS: ${{ matrix.PYTHON.ARCHFLAGS }}
@@ -400,11 +411,15 @@ jobs:
       - run: mkdir wheelhouse
         shell: bash
       - run: |
+          tar xf tongsuopy*.tar.gz
+          SDIST_DIR=$(ls -d tongsuopy-*/)
           if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
-              PY_LIMITED_API="--config-settings=build-args=--features=pyo3/abi3-${{ matrix.PYTHON.ABI_VERSION }} --no-build-isolation"
+              CP_VERSION="$(echo '${{ matrix.PYTHON.ABI_VERSION }}' | sed 's/py/cp/')"
+              export TONGSUOPY_LIMITED_API="$CP_VERSION"
+              printf '[bdist_wheel]\npy_limited_api = %s\n' "$CP_VERSION" > "${SDIST_DIR}/setup.cfg"
           fi
 
-          python -m pip wheel -v --no-deps tongsuopy*.tar.gz $PY_LIMITED_API -w dist/ && mv dist/tongsuopy*.whl wheelhouse/
+          python -m pip wheel -v --no-deps --no-build-isolation "${SDIST_DIR}" -w dist/ && mv dist/tongsuopy*.whl wheelhouse/
         shell: bash
       - run: pip install -f wheelhouse --no-index tongsuopy
       - name: Print the Tongsuo we built and linked against
